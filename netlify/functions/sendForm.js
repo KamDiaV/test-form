@@ -1,10 +1,8 @@
-// my-netlify-site/netlify/functions/sendForm.js
-
-// Если нужно использовать fetch, подключаем node-fetch
+// netlify/functions/sendForm.js
 const fetch = require('node-fetch');
 
 exports.handler = async (event, context) => {
-  // Проверяем метод запроса
+  // Разрешаем только POST-запрос
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
@@ -13,25 +11,36 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    // Парсим тело запроса (JSON)
+    // Парсим тело запроса
     const body = JSON.parse(event.body);
     const { name, email, message } = body;
 
-    // Пример: просто выводим в консоль (в реальном проекте - отправка в Телеграм и т.п.)
-    console.log('Новая заявка:');
-    console.log('Имя:', name);
-    console.log('Email:', email);
-    console.log('Сообщение:', message);
+    // Считываем токен и chat_id из переменных окружения
+    const botToken = process.env.TELEGRAM_BOT_TOKEN;
+    const chatId = process.env.TELEGRAM_CHAT_ID;
 
-    // Здесь можно реализовать логику отправки:
-    // - в Телеграм
-    // - на почту (через сервис типа SendGrid)
-    // - в CRM и т.д.
+    // Формируем текст сообщения
+    const text = `Новая заявка:\nИмя: ${name}\nEmail: ${email}\nСообщение: ${message}`;
 
-    // Возвращаем ответ
+    // Отправляем запрос в Телеграм
+    const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
+    const telegramRes = await fetch(telegramUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: chatId, text })
+    });
+
+    const telegramData = await telegramRes.json();
+
+    // Проверяем ответ Телеграма
+    if (!telegramData.ok) {
+      throw new Error('Telegram API error: ' + telegramData.description);
+    }
+
+    // Если всё прошло успешно, возвращаем 200
     return {
       statusCode: 200,
-      body: JSON.stringify({ ok: true, msg: 'Form data received' }),
+      body: JSON.stringify({ ok: true, msg: 'Form data sent to Telegram' }),
     };
   } catch (error) {
     console.error(error);
@@ -41,5 +50,3 @@ exports.handler = async (event, context) => {
     };
   }
 };
-
-// коммент
