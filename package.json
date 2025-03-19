@@ -1,0 +1,23 @@
+{
+  "name": "test-form",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KamDiaV/test-form.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KamDiaV/test-form/issues"
+  },
+  "homepage": "https://github.com/KamDiaV/test-form#readme",
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  }
+}
