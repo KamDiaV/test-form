@@ -1,0 +1,62 @@
+<!-- my-netlify-site/index.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Netlify Form Example</title>
+  <style>
+    body { font-family: sans-serif; margin: 2rem; }
+    form { display: flex; flex-direction: column; max-width: 300px; }
+    label { margin: 0.5rem 0 0.2rem; }
+    input, textarea, button { padding: 0.5rem; }
+    button { margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Форма заявки</h1>
+  <form id="contactForm">
+    <label for="name">Имя:</label>
+    <input type="text" id="name" name="name" required />
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required />
+
+    <label for="message">Сообщение:</label>
+    <textarea id="message" name="message" rows="5" required></textarea>
+
+    <button type="submit">Отправить</button>
+  </form>
+
+  <script>
+    const form = document.getElementById('contactForm');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Собираем данные из формы
+      const formData = {
+        name: form.elements.name.value,
+        email: form.elements.email.value,
+        message: form.elements.message.value,
+      };
+
+      try {
+        // Отправляем POST-запрос к нашей функции
+        const response = await fetch('/.netlify/functions/sendForm', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData),
+        });
+
+        const data = await response.json();
+        if (data.ok) {
+          alert('Заявка успешно отправлена!');
+        } else {
+          alert('Ошибка при отправке: ' + (data.error || 'Неизвестная ошибка'));
+        }
+      } catch (error) {
+        alert('Ошибка: ' + error.message);
+      }
+    });
+  </script>
+</body>
+</html>
