@@ -1,0 +1,3 @@
+# my-netlify-site/netlify.toml
+[build]
+  functions = "netlify/functions"
